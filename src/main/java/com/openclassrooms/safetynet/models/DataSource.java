@@ -11,4 +11,5 @@ public class DataSource {
     private List<Person> persons;
     private List<Firestation> firestations;
     private List<Medicalrecord> medicalrecords;
+    private List<PersonFullDetails> personFullDetails;
 }
