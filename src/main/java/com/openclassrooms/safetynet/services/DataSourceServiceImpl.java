@@ -3,11 +3,8 @@ package com.openclassrooms.safetynet.services;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.openclassrooms.safetynet.models.DataSource;
@@ -34,42 +31,51 @@ public class DataSourceServiceImpl implements DataSourceService {
 
     @Override
     public CoveredByFirestationDTO getAllPersonsByFirestation(int num) {
-        // List of people covered by the firestation num
+        Set<String> streetsCoveredbyFirestation = new HashSet<>();
+        List<Person> peopleCoveredByFirestation = new ArrayList<>();
         CoveredByFirestationDTO dto = new CoveredByFirestationDTO();
-        List<Person> people = new ArrayList<>();
-        Set<String> addressesCoveredbyFirestation = new HashSet<>();
+
         dataSource.getFirestations().forEach(fStation -> {
             if (fStation.getStation() == num) {
-                addressesCoveredbyFirestation.add(fStation.getAddress());
+                streetsCoveredbyFirestation.add(fStation.getAddress());
             }
         });
 
-        for (String address : addressesCoveredbyFirestation) {
+        for (String street: streetsCoveredbyFirestation) {
             for (int i = 0; i < dataSource.getPersons().size(); i++) {
-                if (address.equals(dataSource.getPersons().get(i).getAddress())) {
-                    Person person = new Person();
-                    person.setFirstName(dataSource.getPersons().get(i).getFirstName());
-                    person.setLastName(dataSource.getPersons().get(i).getLastName());
-                    person.setAddress(dataSource.getPersons().get(i).getAddress());
-                    person.setCity(dataSource.getPersons().get(i).getCity());
-                    person.setZip(dataSource.getPersons().get(i).getZip());
-                    person.setPhone(dataSource.getPersons().get(i).getPhone());
-                    people.add(person);
+                if (street.equals(dataSource.getPersons().get(i).getAddress())) {
+                    peopleCoveredByFirestation.add(dataSource.getPersons().get(i));
                 }
             }
         }
-            return dto;
+
+        int numOfKids = getAllYoungerThan(19, peopleCoveredByFirestation).size();
+        int numOfAdults = peopleCoveredByFirestation.size() - numOfKids;
+
+        dto.setPersons(peopleCoveredByFirestation);
+        dto.setNumberOfKids(numOfKids);
+        dto.setNumberOfAdults(numOfAdults);
+        // Setting Nulls to the values we do not want to show in Json response.
+        dto.getPersons().forEach(person -> {
+            person.setEmail(null);
+        });
+        return dto;
     }
 
-    // if (m.getBirthdate().isBefore(today.minusYears(age)))
     @Override
-    public List<Person> getAllYoungerThan(int age, DataSource data) {
+    public List<Person> getAllYoungerThan(int age, List<Person> data) {
         List<Person> result = new ArrayList<>();
         LocalDate today = LocalDate.now();
-        for (int i = 0; i < data.getMedicalrecords().size(); i++) {
-            if (data.getMedicalrecords().get(i).getBirthdate().isBefore(today.minusYears(age))) {
-                result.add(data.getPersons().get(i));
+        for (Person person: data) {
+            for (Medicalrecord medRec: dataSource.getMedicalrecords()) {
+                if (person.getFirstName().equals(medRec.getFirstName()) &&
+                    person.getLastName().equals(medRec.getLastName()) &&
+                    medRec.getBirthdate().isAfter(today.minusYears(age))
+                ) {
+                    result.add(person);
+                }
             }
+
         }
         return result;
     }

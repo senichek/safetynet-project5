@@ -1,10 +1,8 @@
 package com.openclassrooms.safetynet.controllers;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.openclassrooms.safetynet.models.DataSource;
-import com.openclassrooms.safetynet.models.Person;
 import com.openclassrooms.safetynet.models.DTO.CoveredByFirestationDTO;
 import com.openclassrooms.safetynet.services.DataSourceService;
 
@@ -15,11 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
 
 @RestController
-@Slf4j
+@Log4j2
 public class MainController {
 
     @Autowired
@@ -28,14 +26,13 @@ public class MainController {
     // TODO - delete later
     @GetMapping(value = "/")
     public String greetings() throws IOException {    
-        log.info("MainController.greetings() was called."); 
         return "Just checking if it's running. Looks OK!";
     }
 
     // TODO - delete later
     @GetMapping(value="/data")
     public DataSource getAllData() throws IOException {
-        log.info("MainController.getAllData() was called."); 
+    
         return dataSourceService.getAllData();
     }
 
@@ -46,7 +43,12 @@ public class MainController {
     }
 
     @GetMapping(value = "/firestation")
-    public CoveredByFirestationDTO getAllCoveredByFirestation(@RequestParam (name = "stationNumber", required = false) Integer stationNum) {
-        return dataSourceService.getAllPersonsByFirestation(stationNum);
+    public ResponseEntity<CoveredByFirestationDTO> getAllCoveredByFirestation(@RequestParam (name = "stationNumber", required = false) Integer stationNum) {
+        log.info("MainController.getAllCoveredByFirestation(stationNum) was called.");
+        if (stationNum == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(dataSourceService.getAllPersonsByFirestation(stationNum), HttpStatus.OK);
+        }
     }
 }
