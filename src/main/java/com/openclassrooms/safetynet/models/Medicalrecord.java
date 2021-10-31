@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 public class Medicalrecord {
     private String firstName;
     private String lastName;
-    //private String birthdate;
     private LocalDate birthdate;
     private String[] medications;
     private String[] allergies;

@@ -1,12 +1,15 @@
 package com.openclassrooms.safetynet.models;
 
 import java.time.LocalDate;
+import java.util.Set;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class PersonFullDetails {
     private String firstName;
     private String lastName;
@@ -16,5 +19,8 @@ public class PersonFullDetails {
     private String phone;
     private String email;
     private LocalDate birthdate;
-    private int firestationNumber;
+    private Integer age;
+    private String[] medications;
+    private String[] allergies;
+    private Set<Firestation> firestations;
 }
