@@ -1,6 +1,5 @@
 package com.openclassrooms.safetynet.services;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -18,34 +17,29 @@ import com.openclassrooms.safetynet.models.DTO.ChildAlertDTO;
 import com.openclassrooms.safetynet.models.DTO.CoveredByFirestationDTO;
 import com.openclassrooms.safetynet.models.DTO.FireDTO;
 import com.openclassrooms.safetynet.models.DTO.FloodDTO;
-import com.openclassrooms.safetynet.utils.JsonReader;
+import com.openclassrooms.safetynet.repos.DataRepo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DataSourceServiceImpl implements DataSourceService {
 
-    private DataSource dataSource;
-
-    //private List<PersonFullDetails> peopleFullDetails;
-
-    public DataSourceServiceImpl() throws IOException {
-        this.dataSource = JsonReader
-                .getData("https://s3-eu-west-1.amazonaws.com/course.oc-static.com/projects/DA+Java+EN/P5+/data.json");
-    }
+    @Autowired
+    DataRepo dataRepo;
 
     @Override
     public DataSource getAllData() {
-        return this.dataSource;
+        return this.dataRepo.getData();
     }
 
     @Override
     public CoveredByFirestationDTO getAllPeopleByFirestation(int num) {
         CoveredByFirestationDTO dto = new CoveredByFirestationDTO();
         List<PersonFullDetails> peopleCoveredByFirestation = new ArrayList<>();
-        dataSource.getFirestations().forEach(fStation -> {
+        dataRepo.getData().getFirestations().forEach(fStation -> {
             if (fStation.getStation() == num) {
-                dataSource.getPersons().forEach(p -> {
+                dataRepo.getData().getPersons().forEach(p -> {
                     if (p.getAddress().equals(fStation.getAddress())) {
                     PersonFullDetails person = new PersonFullDetails();
                     person.setFirstName(p.getFirstName());
@@ -75,7 +69,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     public List<ChildAlertDTO> getChildrenByAddress(String address) {
         List<Person> filteredData = new ArrayList<>();
         // Filtering full collection by address
-        filteredData = dataSource.getPersons().stream().filter(person -> person.getAddress().equals(address))
+        filteredData = dataRepo.getData().getPersons().stream().filter(person -> person.getAddress().equals(address))
                 .collect(Collectors.toList());
         
         List<ChildAlertDTO> result = new ArrayList<>();
@@ -96,7 +90,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     @Override
     public List<Person> getHousholdMembers(String firstName, String lastName, String address) {
         List<Person> result = new ArrayList<>();
-        dataSource.getPersons().forEach(person -> {
+        dataRepo.getData().getPersons().forEach(person -> {
             if (person.getLastName().equals(lastName) && person.getAddress().equals(address)
                     && !person.getFirstName().equals(firstName)) {
                 result.add(person);
@@ -108,9 +102,9 @@ public class DataSourceServiceImpl implements DataSourceService {
     @Override
     public Set<String> getPhonesByFirestation(Integer fStationNumber) {
         Set<String> result = new HashSet<>();
-        dataSource.getFirestations().forEach(fStation -> {
+        dataRepo.getData().getFirestations().forEach(fStation -> {
             if (fStation.getStation() == fStationNumber) {
-                dataSource.getPersons().forEach(p -> {
+                dataRepo.getData().getPersons().forEach(p -> {
                     if (p.getAddress().equals(fStation.getAddress())) {
                         result.add(p.getPhone());
                     }
@@ -125,7 +119,7 @@ public class DataSourceServiceImpl implements DataSourceService {
         List<PersonFullDetails> peopleByAddress = new ArrayList<>();
         Set<Integer> fireStationsNumbers = new HashSet<>();
         FireDTO result = new FireDTO();
-        dataSource.getPersons().forEach(person -> {
+        dataRepo.getData().getPersons().forEach(person -> {
             if (person.getAddress().equals(address)) {
                 PersonFullDetails prs = new PersonFullDetails();
                 prs.setLastName(person.getLastName());
@@ -135,7 +129,7 @@ public class DataSourceServiceImpl implements DataSourceService {
                 prs.setAllergies(getAllergiesByPersonName(person.getFirstName(), person.getLastName()));
                 peopleByAddress.add(prs);
 
-                dataSource.getFirestations().forEach(fStation -> {
+                dataRepo.getData().getFirestations().forEach(fStation -> {
                     if (fStation.getAddress().equals(address)) {
                         fireStationsNumbers.add(fStation.getStation());
                     }
@@ -150,7 +144,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     @Override
     public Set<Firestation> getFirestationsByAddress(String address) {
         Set<Firestation> result = new HashSet<>();
-        dataSource.getFirestations().forEach(fStation -> {
+        dataRepo.getData().getFirestations().forEach(fStation -> {
             if (fStation.getAddress().equals(address)) {
                 result.add(fStation);
             }
@@ -161,7 +155,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     @Override
     public LocalDate getBirthdateByName(String fName, String lName) {
         LocalDate birthdate = null;
-        for (Medicalrecord medRec : dataSource.getMedicalrecords()) {
+        for (Medicalrecord medRec : dataRepo.getData().getMedicalrecords()) {
             if (fName.equals(medRec.getFirstName()) && lName.equals(medRec.getLastName())) {
                 birthdate = medRec.getBirthdate();
             }
@@ -172,7 +166,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     @Override
     public String[] getMedicationsByPersonName(String fName, String lName) {
         String[] medications = null;
-        for (Medicalrecord medRec : dataSource.getMedicalrecords()) {
+        for (Medicalrecord medRec : dataRepo.getData().getMedicalrecords()) {
             if (fName.equals(medRec.getFirstName()) && lName.equals(medRec.getLastName())) {
                 medications = medRec.getMedications();
             }
@@ -183,7 +177,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     @Override
     public String[] getAllergiesByPersonName(String fName, String lName) {
         String[] allegries = null;
-        for (Medicalrecord medRec : dataSource.getMedicalrecords()) {
+        for (Medicalrecord medRec : dataRepo.getData().getMedicalrecords()) {
             if (fName.equals(medRec.getFirstName()) && lName.equals(medRec.getLastName())) {
                 allegries = medRec.getAllergies();
             }
@@ -195,7 +189,7 @@ public class DataSourceServiceImpl implements DataSourceService {
     public int getAgeByPersonName(String fName, String lName) {
         LocalDate today = LocalDate.now();
         Integer age = null;
-        for (Medicalrecord medRec : dataSource.getMedicalrecords()) {
+        for (Medicalrecord medRec : dataRepo.getData().getMedicalrecords()) {
             if (fName.equals(medRec.getFirstName()) && lName.equals(medRec.getLastName())) {
                 age = Period.between(medRec.getBirthdate(), today).getYears();
             }
@@ -209,7 +203,7 @@ public class DataSourceServiceImpl implements DataSourceService {
         Set<String> addressesCoveredByFireStations = new HashSet<>();
         // Getting Firestations' addresses
         fireStationNums.forEach(fNum -> {
-            dataSource.getFirestations().forEach(fStation -> {
+            dataRepo.getData().getFirestations().forEach(fStation -> {
                 if (fNum == fStation.getStation()) {
                     addressesCoveredByFireStations.add(fStation.getAddress());
                 }
@@ -218,7 +212,7 @@ public class DataSourceServiceImpl implements DataSourceService {
         // Filtering the people by firestation address
         addressesCoveredByFireStations.forEach(adr -> {
             List<PersonFullDetails> peopleByAddress = new ArrayList<>();
-            dataSource.getPersons().forEach(p -> {
+            dataRepo.getData().getPersons().forEach(p -> {
                 if (adr.equals(p.getAddress())) {
                     PersonFullDetails prs = new PersonFullDetails();
                     prs.setFirstName(p.getFirstName());
@@ -243,7 +237,7 @@ public class DataSourceServiceImpl implements DataSourceService {
         List<PersonFullDetails> result = new ArrayList<>();
         // Return the full list of people if there are no params in URL
         if (firstName.equals("") && lastName.equals("")) {
-            dataSource.getPersons().forEach(p -> {
+            dataRepo.getData().getPersons().forEach(p -> {
                 PersonFullDetails prs = new PersonFullDetails();
                 prs.setFirstName(p.getFirstName());
                 prs.setLastName(p.getLastName());
@@ -257,7 +251,7 @@ public class DataSourceServiceImpl implements DataSourceService {
                 result.add(prs);
             });
         } else if (!firstName.equals("") && lastName.equals("")) {
-            dataSource.getPersons().forEach(p -> {
+            dataRepo.getData().getPersons().forEach(p -> {
                 if (firstName.equals(p.getFirstName())) {
                     PersonFullDetails prs = new PersonFullDetails();
                     prs.setFirstName(p.getFirstName());
@@ -273,7 +267,7 @@ public class DataSourceServiceImpl implements DataSourceService {
                 }
             });
         } else if (firstName.equals("") && !lastName.equals("")) {
-            dataSource.getPersons().forEach(p -> {
+            dataRepo.getData().getPersons().forEach(p -> {
                 if (lastName.equals(p.getLastName())) {
                     PersonFullDetails prs = new PersonFullDetails();
                     prs.setFirstName(p.getFirstName());
@@ -289,7 +283,7 @@ public class DataSourceServiceImpl implements DataSourceService {
                 }
             });
         } else {
-            dataSource.getPersons().forEach(p -> {
+            dataRepo.getData().getPersons().forEach(p -> {
                 if (firstName.equals(p.getFirstName()) && lastName.equals(p.getLastName())) {
                     PersonFullDetails prs = new PersonFullDetails();
                     prs.setFirstName(p.getFirstName());
@@ -314,7 +308,7 @@ public class DataSourceServiceImpl implements DataSourceService {
         if (city == null || city.equals("")) {
             return null;
         } else {
-            dataSource.getPersons().forEach(p -> {
+            dataRepo.getData().getPersons().forEach(p -> {
                 if (p.getCity().toLowerCase().equals(city.toLowerCase())) {
                     result.add(p.getEmail());
                 }

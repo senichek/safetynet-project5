@@ -2,6 +2,7 @@ package com.openclassrooms.safetynet.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -78,5 +79,16 @@ public class DataSourceServiceImplTest {
         assertEquals(TestData.emails, dataSourceService.getEmailsByCityName("Culver"));
         assertEquals(null, dataSourceService.getEmailsByCityName(""));
         assertEquals(0, dataSourceService.getEmailsByCityName("NonExistant").size());
+    }
+
+    @Test
+    public void getFirestationsByAddressTest() {
+        assertEquals(TestData.firestations, dataSourceService.getFirestationsByAddress("112 Steppes Pl"));
+    }
+
+    @Test
+    public void getBirthdateByNameTest() {
+        //LocalDate expected = LocalDate.of(1975, 12, 6);
+        assertEquals(LocalDate.of(1975, 12, 6), dataSourceService.getBirthdateByName("Brian", "Stelzer"));
     }
 }

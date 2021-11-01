@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.openclassrooms.safetynet.models.Firestation;
 import com.openclassrooms.safetynet.models.Person;
 import com.openclassrooms.safetynet.models.PersonFullDetails;
 import com.openclassrooms.safetynet.models.DTO.ChildAlertDTO;
@@ -87,5 +88,10 @@ public class TestData {
         public static Set<String> emails = Set.of("drk@email.com", "soph@email.com", "reg@email.com", "jaboyd@email.com", "bstel@email.com", "clivfd@ymail.com", 
                         "jpeter@email.com", "aly@imail.com", "ssanw@email.com", "gramps@email.com", "zarc@email.com", "ward@email.com", "tcoop@ymail.com", 
                         "tenz@email.com", "lily@email.com");
+
+        // getFirestationsByAddress Test Data
+        static Firestation fStation_number_3 = new Firestation("112 Steppes Pl", 3);
+        static Firestation fStation_number_4 = new Firestation("112 Steppes Pl", 4);
+        public static Set<Firestation> firestations = Set.of(fStation_number_3, fStation_number_4);
 
 }
