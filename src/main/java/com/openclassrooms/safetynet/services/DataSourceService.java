@@ -27,4 +27,5 @@ public interface DataSourceService {
     String[] getAllergiesByPersonName(String fName, String lName);
     int getAgeByPersonName(String fName, String lName);
     List<FloodDTO> getAllByFireStationNumberFlood(Set<Integer> fireStationNums);
+    List<PersonFullDetails> getAllByFirstNameAndLastName(String firstName, String lastName);
 }

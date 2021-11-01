@@ -83,7 +83,8 @@ public class DataSourceServiceImpl implements DataSourceService {
                 }
             });
         });
-        int numOfKids = peopleCoveredByFirestation.stream().filter(person -> person.getAge() < 19).collect(Collectors.toList()).size();
+        int numOfKids = peopleCoveredByFirestation.stream().filter(person -> person.getAge() < 19)
+                .collect(Collectors.toList()).size();
         int numOfAdults = peopleCoveredByFirestation.size() - numOfKids;
 
         dto.setPersons(peopleCoveredByFirestation);
@@ -96,7 +97,8 @@ public class DataSourceServiceImpl implements DataSourceService {
     public List<ChildAlertDTO> getChildrenByAddress(String address) {
         List<PersonFullDetails> filteredData = new ArrayList<>();
         // Filtering full collection by address
-        filteredData = peopleFullDetails.stream().filter(person -> person.getAddress().equals(address)).collect(Collectors.toList());
+        filteredData = peopleFullDetails.stream().filter(person -> person.getAddress().equals(address))
+                .collect(Collectors.toList());
         // Looking for the kids in the filtered results.
         filteredData = filteredData.stream().filter(person -> person.getAge() < 19).collect(Collectors.toList());
         List<ChildAlertDTO> result = new ArrayList<>();
@@ -126,13 +128,13 @@ public class DataSourceServiceImpl implements DataSourceService {
     @Override
     public Set<String> getPhonesByFirestation(Integer fStationNumber) {
         Set<String> result = new HashSet<>();
-       peopleFullDetails.forEach(p -> {
-           p.getFirestations().forEach(fStation -> {
-               if (fStation.getStation() == fStationNumber) {
+        peopleFullDetails.forEach(p -> {
+            p.getFirestations().forEach(fStation -> {
+                if (fStation.getStation() == fStationNumber) {
                     result.add(p.getPhone());
-               }
-           });
-       });
+                }
+            });
+        });
         return result;
     }
 
@@ -236,6 +238,7 @@ public class DataSourceServiceImpl implements DataSourceService {
             peopleFullDetails.forEach(p -> {
                 if (adr.equals(p.getAddress())) {
                     PersonFullDetails prs = new PersonFullDetails();
+                    prs.setFirstName(p.getFirstName());
                     prs.setLastName(p.getLastName());
                     prs.setPhone(p.getPhone());
                     prs.setAge(p.getAge());
@@ -249,6 +252,76 @@ public class DataSourceServiceImpl implements DataSourceService {
             floodDTO.setPeople(peopleByAddress);
             result.add(floodDTO);
         });
+        return result;
+    }
+
+    @Override
+    public List<PersonFullDetails> getAllByFirstNameAndLastName(String firstName, String lastName) {
+        List<PersonFullDetails> result = new ArrayList<>();
+        // Return the full list of people if there are no params in URL
+        if (firstName.equals("") && lastName.equals("")) {
+            peopleFullDetails.forEach(p -> {
+                PersonFullDetails prs = new PersonFullDetails();
+                prs.setFirstName(p.getFirstName());
+                prs.setLastName(p.getLastName());
+                prs.setAddress(p.getAddress());
+                prs.setCity(p.getCity());
+                prs.setZip(p.getZip());
+                prs.setAge(p.getAge());
+                prs.setEmail(p.getEmail());
+                prs.setMedications(p.getMedications());
+                prs.setAllergies(p.getAllergies());
+                result.add(prs);
+            });
+        } else if (!firstName.equals("") && lastName.equals("")) {
+            peopleFullDetails.forEach(p -> {
+                if (firstName.equals(p.getFirstName())) {
+                    PersonFullDetails prs = new PersonFullDetails();
+                    prs.setFirstName(p.getFirstName());
+                    prs.setLastName(p.getLastName());
+                    prs.setAddress(p.getAddress());
+                    prs.setCity(p.getCity());
+                    prs.setZip(p.getZip());
+                    prs.setAge(p.getAge());
+                    prs.setEmail(p.getEmail());
+                    prs.setMedications(p.getMedications());
+                    prs.setAllergies(p.getAllergies());
+                    result.add(prs);
+                }
+            });
+        } else if (firstName.equals("") && !lastName.equals("")) {
+            peopleFullDetails.forEach(p -> {
+                if (lastName.equals(p.getLastName())) {
+                    PersonFullDetails prs = new PersonFullDetails();
+                    prs.setFirstName(p.getFirstName());
+                    prs.setLastName(p.getLastName());
+                    prs.setAddress(p.getAddress());
+                    prs.setCity(p.getCity());
+                    prs.setZip(p.getZip());
+                    prs.setAge(p.getAge());
+                    prs.setEmail(p.getEmail());
+                    prs.setMedications(p.getMedications());
+                    prs.setAllergies(p.getAllergies());
+                    result.add(prs);
+                }
+            });
+        } else {
+                peopleFullDetails.forEach(p -> {
+                    if (firstName.equals(p.getFirstName()) && lastName.equals(p.getLastName())) {
+                    PersonFullDetails prs = new PersonFullDetails();
+                    prs.setFirstName(p.getFirstName());
+                    prs.setLastName(p.getLastName());
+                    prs.setAddress(p.getAddress());
+                    prs.setCity(p.getCity());
+                    prs.setZip(p.getZip());
+                    prs.setAge(p.getAge());
+                    prs.setEmail(p.getEmail());
+                    prs.setMedications(p.getMedications());
+                    prs.setAllergies(p.getAllergies());
+                    result.add(prs);
+                    }
+                });
+        }
         return result;
     }
 }

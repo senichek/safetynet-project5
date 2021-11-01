@@ -26,7 +26,7 @@ public class MainController {
     @Autowired
     DataSourceService dataSourceService;
 
-    //TODO - delete later
+    // TODO - delete later
     @GetMapping(value = "/data")
     public List<PersonFullDetails> allData() {
         return dataSourceService.getAllFullDetails();
@@ -55,7 +55,8 @@ public class MainController {
     }
 
     @GetMapping(value = "/phoneAlert")
-    public ResponseEntity<Set<String>> getPhonesByFirestation(@RequestParam(name = "firestation", required = false) Integer num) {
+    public ResponseEntity<Set<String>> getPhonesByFirestation(
+            @RequestParam(name = "firestation", required = false) Integer num) {
         log.info("MainController.getPhonesByFirestation(num) was called.");
         if (num == null || dataSourceService.getPhonesByFirestation(num) == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -65,7 +66,8 @@ public class MainController {
     }
 
     @GetMapping(value = "/fire")
-    public ResponseEntity<FireDTO> getAllByAddressFire(@RequestParam(name = "address", required = false) String address) {
+    public ResponseEntity<FireDTO> getAllByAddressFire(
+            @RequestParam(name = "address", required = false) String address) {
         log.info("MainController.getAllByAddressInCaseOfFire(address) was called.");
         if (address == null || dataSourceService.getAllByAddressInCaseOfFire(address) == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -75,12 +77,27 @@ public class MainController {
     }
 
     @GetMapping(value = "/flood/stations")
-    public ResponseEntity<List<FloodDTO>> getAllByFireStationNumberFlood(@RequestParam(name = "stations", required = false) Set<Integer> fStationNums) {
+    public ResponseEntity<List<FloodDTO>> getAllByFireStationNumberFlood(
+            @RequestParam(name = "stations", required = false) Set<Integer> fStationNums) {
         log.info("MainController.getAllByFireStationNumberFlood(fStationNums) was called.");
         if (fStationNums == null || dataSourceService.getAllByFireStationNumberFlood(fStationNums) == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(dataSourceService.getAllByFireStationNumberFlood(fStationNums), HttpStatus.OK);
+        }
+    }
+
+    @GetMapping(value = "/personInfo")
+    public ResponseEntity<List<PersonFullDetails>> getAllByFirstNameAndLastName(
+            @RequestParam(name = "firstName", required = false) String firstName,
+            @RequestParam(name = "lastName", required = false) String lastName) {
+        log.info("MainController.getAllByFirstNameAndLastName(firstName, lastName) was called.");
+        if (dataSourceService.getAllByFirstNameAndLastName(firstName, lastName) == null ||
+            dataSourceService.getAllByFirstNameAndLastName(firstName, lastName).size() == 0) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(dataSourceService.getAllByFirstNameAndLastName(firstName, lastName),
+                    HttpStatus.OK);
         }
     }
 }
