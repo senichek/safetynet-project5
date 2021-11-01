@@ -8,6 +8,7 @@ import com.openclassrooms.safetynet.models.Person;
 import com.openclassrooms.safetynet.models.PersonFullDetails;
 import com.openclassrooms.safetynet.models.DTO.ChildAlertDTO;
 import com.openclassrooms.safetynet.models.DTO.FireDTO;
+import com.openclassrooms.safetynet.models.DTO.FloodDTO;
 
 public class TestData {
 
@@ -45,4 +46,21 @@ public class TestData {
     static List<PersonFullDetails> personsFire = List.of(personFire_1, personFire_2, personFire_3);
     static List<Integer> firestationsNums = List.of(3, 4); // List is used to maintain order.
     public static FireDTO fire_data = new FireDTO(personsFire, new HashSet<>(firestationsNums));
+
+    // Flood Test Data
+    static PersonFullDetails personFlood_1 = new PersonFullDetails(null, "Cooper", null, null, null, "841-874-9845",
+            null, null, 27, new String[] {}, new String[] {}, null);
+
+    static PersonFullDetails personFlood_2 = new PersonFullDetails(null, "Cooper", null, null, null, "841-874-6874",
+            null, null, 27, new String[] { "hydrapermazol:300mg", "dodoxadin:30mg" }, new String[] { "shellfish" }, null);
+
+    static PersonFullDetails personFlood_3 = new PersonFullDetails(null, "Peters", null, null, null, "841-874-8888",
+            null, null, 56, new String[] {}, new String[] {}, null);
+
+    static PersonFullDetails personFlood_4 = new PersonFullDetails(null, "Boyd", null, null, null, "841-874-9888",
+            null, null, 56, new String[] { "aznol:200mg"}, new String[] { "nillacilan" }, null);
+
+    static FloodDTO floodDTO_1 = new FloodDTO("489 Manchester St", List.of(personFlood_1));
+    static FloodDTO floodDTO_2 = new FloodDTO("112 Steppes Pl", List.of(personFlood_2, personFlood_3, personFlood_4));
+    public static List<FloodDTO> floodDTOs = List.of(floodDTO_1, floodDTO_2);
 }

@@ -2,6 +2,8 @@ package com.openclassrooms.safetynet.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Set;
+
 import com.openclassrooms.safetynet.TestData;
 
 import org.junit.jupiter.api.Test;
@@ -39,4 +41,8 @@ public class DataSourceServiceImplTest {
         assertEquals(TestData.fire_data, dataSourceService.getAllByAddressInCaseOfFire("112 Steppes Pl"));
     }
 
+    @Test
+    public void getAllByFireStationNumberFloodTest() {
+        assertEquals(TestData.floodDTOs, dataSourceService.getAllByFireStationNumberFlood(Set.of(4)));
+    }
 }

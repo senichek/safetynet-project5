@@ -11,6 +11,7 @@ import com.openclassrooms.safetynet.models.PersonFullDetails;
 import com.openclassrooms.safetynet.models.DTO.ChildAlertDTO;
 import com.openclassrooms.safetynet.models.DTO.CoveredByFirestationDTO;
 import com.openclassrooms.safetynet.models.DTO.FireDTO;
+import com.openclassrooms.safetynet.models.DTO.FloodDTO;
 
 public interface DataSourceService {
     DataSource getAllData();
@@ -25,4 +26,5 @@ public interface DataSourceService {
     String[] getMedicationsByPersonName(String fName, String lName);
     String[] getAllergiesByPersonName(String fName, String lName);
     int getAgeByPersonName(String fName, String lName);
+    List<FloodDTO> getAllByFireStationNumberFlood(Set<Integer> fireStationNums);
 }

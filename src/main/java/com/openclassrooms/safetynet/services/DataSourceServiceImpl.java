@@ -17,6 +17,7 @@ import com.openclassrooms.safetynet.models.PersonFullDetails;
 import com.openclassrooms.safetynet.models.DTO.ChildAlertDTO;
 import com.openclassrooms.safetynet.models.DTO.CoveredByFirestationDTO;
 import com.openclassrooms.safetynet.models.DTO.FireDTO;
+import com.openclassrooms.safetynet.models.DTO.FloodDTO;
 import com.openclassrooms.safetynet.utils.JsonReader;
 
 import org.springframework.stereotype.Service;
@@ -214,5 +215,40 @@ public class DataSourceServiceImpl implements DataSourceService {
             }
         }
         return age;
+    }
+
+    @Override
+    public List<FloodDTO> getAllByFireStationNumberFlood(Set<Integer> fireStationNums) {
+        List<FloodDTO> result = new ArrayList<>();
+        Set<String> addressesCoveredByFireStations = new HashSet<>();
+        fireStationNums.forEach(fNum -> {
+            peopleFullDetails.forEach(p -> {
+                p.getFirestations().forEach(fStation -> {
+                    if (fStation.getStation() == fNum) {
+                        addressesCoveredByFireStations.add(fStation.getAddress());
+                    }
+                });
+            });
+        });
+        // Filtering the people by firestation address
+        addressesCoveredByFireStations.forEach(adr -> {
+            List<PersonFullDetails> peopleByAddress = new ArrayList<>();
+            peopleFullDetails.forEach(p -> {
+                if (adr.equals(p.getAddress())) {
+                    PersonFullDetails prs = new PersonFullDetails();
+                    prs.setLastName(p.getLastName());
+                    prs.setPhone(p.getPhone());
+                    prs.setAge(p.getAge());
+                    prs.setMedications(p.getMedications());
+                    prs.setAllergies(p.getAllergies());
+                    peopleByAddress.add(prs);
+                }
+            });
+            FloodDTO floodDTO = new FloodDTO();
+            floodDTO.setAddress(adr);
+            floodDTO.setPeople(peopleByAddress);
+            result.add(floodDTO);
+        });
+        return result;
     }
 }

@@ -7,6 +7,7 @@ import com.openclassrooms.safetynet.models.PersonFullDetails;
 import com.openclassrooms.safetynet.models.DTO.ChildAlertDTO;
 import com.openclassrooms.safetynet.models.DTO.CoveredByFirestationDTO;
 import com.openclassrooms.safetynet.models.DTO.FireDTO;
+import com.openclassrooms.safetynet.models.DTO.FloodDTO;
 import com.openclassrooms.safetynet.services.DataSourceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,16 @@ public class MainController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(dataSourceService.getAllByAddressInCaseOfFire(address), HttpStatus.OK);
+        }
+    }
+
+    @GetMapping(value = "/flood/stations")
+    public ResponseEntity<List<FloodDTO>> getAllByFireStationNumberFlood(@RequestParam(name = "stations", required = false) Set<Integer> fStationNums) {
+        log.info("MainController.getAllByFireStationNumberFlood(fStationNums) was called.");
+        if (fStationNums == null || dataSourceService.getAllByFireStationNumberFlood(fStationNums) == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(dataSourceService.getAllByFireStationNumberFlood(fStationNums), HttpStatus.OK);
         }
     }
 }
