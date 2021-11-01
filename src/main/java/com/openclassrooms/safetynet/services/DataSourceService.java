@@ -21,11 +21,11 @@ public interface DataSourceService {
     Set<String> getPhonesByFirestation(Integer fStationNumber);
     FireDTO getAllByAddressInCaseOfFire(String address);
     Set<Firestation> getFirestationsByAddress(String address);
-    List<PersonFullDetails> getAllFullDetails();
     LocalDate getBirthdateByName(String fName, String lName);
     String[] getMedicationsByPersonName(String fName, String lName);
     String[] getAllergiesByPersonName(String fName, String lName);
     int getAgeByPersonName(String fName, String lName);
     List<FloodDTO> getAllByFireStationNumberFlood(Set<Integer> fireStationNums);
     List<PersonFullDetails> getAllByFirstNameAndLastName(String firstName, String lastName);
+    Set<String> getEmailsByCityName(String city);
 }

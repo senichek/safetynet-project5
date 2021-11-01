@@ -3,6 +3,7 @@ package com.openclassrooms.safetynet.controllers;
 import java.util.List;
 import java.util.Set;
 
+import com.openclassrooms.safetynet.models.DataSource;
 import com.openclassrooms.safetynet.models.PersonFullDetails;
 import com.openclassrooms.safetynet.models.DTO.ChildAlertDTO;
 import com.openclassrooms.safetynet.models.DTO.CoveredByFirestationDTO;
@@ -28,8 +29,8 @@ public class MainController {
 
     // TODO - delete later
     @GetMapping(value = "/data")
-    public List<PersonFullDetails> allData() {
-        return dataSourceService.getAllFullDetails();
+    public DataSource allData() {
+        return dataSourceService.getAllData();
     }
 
     @GetMapping(value = "/firestation")
@@ -92,12 +93,23 @@ public class MainController {
             @RequestParam(name = "firstName", required = false) String firstName,
             @RequestParam(name = "lastName", required = false) String lastName) {
         log.info("MainController.getAllByFirstNameAndLastName(firstName, lastName) was called.");
-        if (dataSourceService.getAllByFirstNameAndLastName(firstName, lastName) == null ||
-            dataSourceService.getAllByFirstNameAndLastName(firstName, lastName).size() == 0) {
+        if (dataSourceService.getAllByFirstNameAndLastName(firstName, lastName) == null
+                || dataSourceService.getAllByFirstNameAndLastName(firstName, lastName).size() == 0) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(dataSourceService.getAllByFirstNameAndLastName(firstName, lastName),
                     HttpStatus.OK);
+        }
+    }
+
+    @GetMapping(value = "/communityEmail")
+    public ResponseEntity<Set<String>> getEmailsByCityName(@RequestParam(name = "city", required = false) String city) {
+        log.info("MainController.getEmailsByCityName(city) was called.");
+        if (dataSourceService.getEmailsByCityName(city) == null
+                || dataSourceService.getEmailsByCityName(city).size() == 0) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(dataSourceService.getEmailsByCityName(city), HttpStatus.OK);
         }
     }
 }

@@ -27,31 +27,11 @@ public class DataSourceServiceImpl implements DataSourceService {
 
     private DataSource dataSource;
 
-    private List<PersonFullDetails> peopleFullDetails;
+    //private List<PersonFullDetails> peopleFullDetails;
 
     public DataSourceServiceImpl() throws IOException {
         this.dataSource = JsonReader
                 .getData("https://s3-eu-west-1.amazonaws.com/course.oc-static.com/projects/DA+Java+EN/P5+/data.json");
-
-        // Copying data from 3 collections to a single list so that
-        // we have all the data we might need in one place.
-        peopleFullDetails = new ArrayList<>();
-        dataSource.getPersons().forEach(person -> {
-            PersonFullDetails personFullDetails = new PersonFullDetails();
-            personFullDetails.setFirstName(person.getFirstName());
-            personFullDetails.setLastName(person.getLastName());
-            personFullDetails.setAddress(person.getAddress());
-            personFullDetails.setCity(person.getCity());
-            personFullDetails.setZip(person.getZip());
-            personFullDetails.setPhone(person.getPhone());
-            personFullDetails.setEmail(person.getEmail());
-            personFullDetails.setBirthdate(getBirthdateByName(person.getFirstName(), person.getLastName()));
-            personFullDetails.setAge(getAgeByPersonName(person.getFirstName(), person.getLastName()));
-            personFullDetails.setMedications(getMedicationsByPersonName(person.getFirstName(), person.getLastName()));
-            personFullDetails.setAllergies(getAllergiesByPersonName(person.getFirstName(), person.getLastName()));
-            personFullDetails.setFirestations(getFirestationsByAddress(person.getAddress()));
-            peopleFullDetails.add(personFullDetails);
-        });
     }
 
     @Override
@@ -60,17 +40,13 @@ public class DataSourceServiceImpl implements DataSourceService {
     }
 
     @Override
-    public List<PersonFullDetails> getAllFullDetails() {
-        return peopleFullDetails;
-    }
-
-    @Override
     public CoveredByFirestationDTO getAllPeopleByFirestation(int num) {
         CoveredByFirestationDTO dto = new CoveredByFirestationDTO();
         List<PersonFullDetails> peopleCoveredByFirestation = new ArrayList<>();
-        peopleFullDetails.forEach(p -> {
-            p.getFirestations().forEach(fStation -> {
-                if (fStation.getStation() == num) {
+        dataSource.getFirestations().forEach(fStation -> {
+            if (fStation.getStation() == num) {
+                dataSource.getPersons().forEach(p -> {
+                    if (p.getAddress().equals(fStation.getAddress())) {
                     PersonFullDetails person = new PersonFullDetails();
                     person.setFirstName(p.getFirstName());
                     person.setLastName(p.getLastName());
@@ -78,11 +54,13 @@ public class DataSourceServiceImpl implements DataSourceService {
                     person.setCity(p.getCity());
                     person.setZip(p.getZip());
                     person.setPhone(p.getPhone());
-                    person.setAge(p.getAge());
+                    person.setAge(getAgeByPersonName(p.getFirstName(), p.getLastName()));
                     peopleCoveredByFirestation.add(person);
-                }
-            });
+                    }
+                });
+            }
         });
+
         int numOfKids = peopleCoveredByFirestation.stream().filter(person -> person.getAge() < 19)
                 .collect(Collectors.toList()).size();
         int numOfAdults = peopleCoveredByFirestation.size() - numOfKids;
@@ -95,20 +73,22 @@ public class DataSourceServiceImpl implements DataSourceService {
 
     @Override
     public List<ChildAlertDTO> getChildrenByAddress(String address) {
-        List<PersonFullDetails> filteredData = new ArrayList<>();
+        List<Person> filteredData = new ArrayList<>();
         // Filtering full collection by address
-        filteredData = peopleFullDetails.stream().filter(person -> person.getAddress().equals(address))
+        filteredData = dataSource.getPersons().stream().filter(person -> person.getAddress().equals(address))
                 .collect(Collectors.toList());
-        // Looking for the kids in the filtered results.
-        filteredData = filteredData.stream().filter(person -> person.getAge() < 19).collect(Collectors.toList());
+        
         List<ChildAlertDTO> result = new ArrayList<>();
         filteredData.forEach(p -> {
             ChildAlertDTO childAlertDTO = new ChildAlertDTO();
             childAlertDTO.setFirstName(p.getFirstName());
             childAlertDTO.setLastName(p.getLastName());
-            childAlertDTO.setAge(p.getAge());
-            childAlertDTO.setMembersOfHoushold(getHousholdMembers(p.getFirstName(), p.getLastName(), p.getAddress()));
-            result.add(childAlertDTO);
+            // Looking for the kids in the filtered results.
+            if (getAgeByPersonName(p.getFirstName(), p.getLastName()) < 19) {
+                childAlertDTO.setAge(getAgeByPersonName(p.getFirstName(), p.getLastName()));
+                childAlertDTO.setMembersOfHoushold(getHousholdMembers(p.getFirstName(), p.getLastName(), p.getAddress()));
+                result.add(childAlertDTO);
+            }
         });
         return result;
     }
@@ -128,12 +108,14 @@ public class DataSourceServiceImpl implements DataSourceService {
     @Override
     public Set<String> getPhonesByFirestation(Integer fStationNumber) {
         Set<String> result = new HashSet<>();
-        peopleFullDetails.forEach(p -> {
-            p.getFirestations().forEach(fStation -> {
-                if (fStation.getStation() == fStationNumber) {
-                    result.add(p.getPhone());
-                }
-            });
+        dataSource.getFirestations().forEach(fStation -> {
+            if (fStation.getStation() == fStationNumber) {
+                dataSource.getPersons().forEach(p -> {
+                    if (p.getAddress().equals(fStation.getAddress())) {
+                        result.add(p.getPhone());
+                    }
+                });
+            }
         });
         return result;
     }
@@ -143,18 +125,20 @@ public class DataSourceServiceImpl implements DataSourceService {
         List<PersonFullDetails> peopleByAddress = new ArrayList<>();
         Set<Integer> fireStationsNumbers = new HashSet<>();
         FireDTO result = new FireDTO();
-        peopleFullDetails.forEach(person -> {
+        dataSource.getPersons().forEach(person -> {
             if (person.getAddress().equals(address)) {
-                PersonFullDetails personFullDetails = new PersonFullDetails();
-                personFullDetails.setLastName(person.getLastName());
-                personFullDetails.setPhone(person.getPhone());
-                personFullDetails.setAge(person.getAge());
-                personFullDetails.setMedications(person.getMedications());
-                personFullDetails.setAllergies(person.getAllergies());
-                peopleByAddress.add(personFullDetails);
+                PersonFullDetails prs = new PersonFullDetails();
+                prs.setLastName(person.getLastName());
+                prs.setPhone(person.getPhone());
+                prs.setAge(getAgeByPersonName(person.getFirstName(), person.getLastName()));
+                prs.setMedications(getMedicationsByPersonName(person.getFirstName(), person.getLastName()));
+                prs.setAllergies(getAllergiesByPersonName(person.getFirstName(), person.getLastName()));
+                peopleByAddress.add(prs);
 
-                person.getFirestations().forEach(fStation -> {
-                    fireStationsNumbers.add(fStation.getStation());
+                dataSource.getFirestations().forEach(fStation -> {
+                    if (fStation.getAddress().equals(address)) {
+                        fireStationsNumbers.add(fStation.getStation());
+                    }
                 });
             }
         });
@@ -223,27 +207,26 @@ public class DataSourceServiceImpl implements DataSourceService {
     public List<FloodDTO> getAllByFireStationNumberFlood(Set<Integer> fireStationNums) {
         List<FloodDTO> result = new ArrayList<>();
         Set<String> addressesCoveredByFireStations = new HashSet<>();
+        // Getting Firestations' addresses
         fireStationNums.forEach(fNum -> {
-            peopleFullDetails.forEach(p -> {
-                p.getFirestations().forEach(fStation -> {
-                    if (fStation.getStation() == fNum) {
-                        addressesCoveredByFireStations.add(fStation.getAddress());
-                    }
-                });
+            dataSource.getFirestations().forEach(fStation -> {
+                if (fNum == fStation.getStation()) {
+                    addressesCoveredByFireStations.add(fStation.getAddress());
+                }
             });
         });
         // Filtering the people by firestation address
         addressesCoveredByFireStations.forEach(adr -> {
             List<PersonFullDetails> peopleByAddress = new ArrayList<>();
-            peopleFullDetails.forEach(p -> {
+            dataSource.getPersons().forEach(p -> {
                 if (adr.equals(p.getAddress())) {
                     PersonFullDetails prs = new PersonFullDetails();
                     prs.setFirstName(p.getFirstName());
                     prs.setLastName(p.getLastName());
                     prs.setPhone(p.getPhone());
-                    prs.setAge(p.getAge());
-                    prs.setMedications(p.getMedications());
-                    prs.setAllergies(p.getAllergies());
+                    prs.setAge(getAgeByPersonName(p.getFirstName(), p.getLastName()));
+                    prs.setMedications(getMedicationsByPersonName(p.getFirstName(), p.getLastName()));
+                    prs.setAllergies(getAllergiesByPersonName(p.getFirstName(), p.getLastName()));
                     peopleByAddress.add(prs);
                 }
             });
@@ -260,21 +243,21 @@ public class DataSourceServiceImpl implements DataSourceService {
         List<PersonFullDetails> result = new ArrayList<>();
         // Return the full list of people if there are no params in URL
         if (firstName.equals("") && lastName.equals("")) {
-            peopleFullDetails.forEach(p -> {
+            dataSource.getPersons().forEach(p -> {
                 PersonFullDetails prs = new PersonFullDetails();
                 prs.setFirstName(p.getFirstName());
                 prs.setLastName(p.getLastName());
                 prs.setAddress(p.getAddress());
                 prs.setCity(p.getCity());
                 prs.setZip(p.getZip());
-                prs.setAge(p.getAge());
+                prs.setAge(getAgeByPersonName(p.getFirstName(), p.getLastName()));
                 prs.setEmail(p.getEmail());
-                prs.setMedications(p.getMedications());
-                prs.setAllergies(p.getAllergies());
+                prs.setMedications(getMedicationsByPersonName(p.getFirstName(), p.getLastName()));
+                prs.setAllergies(getAllergiesByPersonName(p.getFirstName(), p.getLastName()));
                 result.add(prs);
             });
         } else if (!firstName.equals("") && lastName.equals("")) {
-            peopleFullDetails.forEach(p -> {
+            dataSource.getPersons().forEach(p -> {
                 if (firstName.equals(p.getFirstName())) {
                     PersonFullDetails prs = new PersonFullDetails();
                     prs.setFirstName(p.getFirstName());
@@ -282,15 +265,15 @@ public class DataSourceServiceImpl implements DataSourceService {
                     prs.setAddress(p.getAddress());
                     prs.setCity(p.getCity());
                     prs.setZip(p.getZip());
-                    prs.setAge(p.getAge());
+                    prs.setAge(getAgeByPersonName(p.getFirstName(), p.getLastName()));
                     prs.setEmail(p.getEmail());
-                    prs.setMedications(p.getMedications());
-                    prs.setAllergies(p.getAllergies());
+                    prs.setMedications(getMedicationsByPersonName(p.getFirstName(), p.getLastName()));
+                    prs.setAllergies(getAllergiesByPersonName(p.getFirstName(), p.getLastName()));
                     result.add(prs);
                 }
             });
         } else if (firstName.equals("") && !lastName.equals("")) {
-            peopleFullDetails.forEach(p -> {
+            dataSource.getPersons().forEach(p -> {
                 if (lastName.equals(p.getLastName())) {
                     PersonFullDetails prs = new PersonFullDetails();
                     prs.setFirstName(p.getFirstName());
@@ -298,30 +281,45 @@ public class DataSourceServiceImpl implements DataSourceService {
                     prs.setAddress(p.getAddress());
                     prs.setCity(p.getCity());
                     prs.setZip(p.getZip());
-                    prs.setAge(p.getAge());
+                    prs.setAge(getAgeByPersonName(p.getFirstName(), p.getLastName()));
                     prs.setEmail(p.getEmail());
-                    prs.setMedications(p.getMedications());
-                    prs.setAllergies(p.getAllergies());
+                    prs.setMedications(getMedicationsByPersonName(p.getFirstName(), p.getLastName()));
+                    prs.setAllergies(getAllergiesByPersonName(p.getFirstName(), p.getLastName()));
                     result.add(prs);
                 }
             });
         } else {
-                peopleFullDetails.forEach(p -> {
-                    if (firstName.equals(p.getFirstName()) && lastName.equals(p.getLastName())) {
+            dataSource.getPersons().forEach(p -> {
+                if (firstName.equals(p.getFirstName()) && lastName.equals(p.getLastName())) {
                     PersonFullDetails prs = new PersonFullDetails();
                     prs.setFirstName(p.getFirstName());
                     prs.setLastName(p.getLastName());
                     prs.setAddress(p.getAddress());
                     prs.setCity(p.getCity());
                     prs.setZip(p.getZip());
-                    prs.setAge(p.getAge());
+                    prs.setAge(getAgeByPersonName(p.getFirstName(), p.getLastName()));
                     prs.setEmail(p.getEmail());
-                    prs.setMedications(p.getMedications());
-                    prs.setAllergies(p.getAllergies());
+                    prs.setMedications(getMedicationsByPersonName(p.getFirstName(), p.getLastName()));
+                    prs.setAllergies(getAllergiesByPersonName(p.getFirstName(), p.getLastName()));
                     result.add(prs);
-                    }
-                });
+                }
+            });
         }
         return result;
+    }
+
+    @Override
+    public Set<String> getEmailsByCityName(String city) {
+        Set<String> result = new HashSet<>();
+        if (city == null || city.equals("")) {
+            return null;
+        } else {
+            dataSource.getPersons().forEach(p -> {
+                if (p.getCity().toLowerCase().equals(city.toLowerCase())) {
+                    result.add(p.getEmail());
+                }
+            });
+            return result;
+        }
     }
 }

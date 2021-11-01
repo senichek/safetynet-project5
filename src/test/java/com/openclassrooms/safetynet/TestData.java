@@ -83,4 +83,9 @@ public class TestData {
 
         public static List<PersonFullDetails> coopers = List.of(Tony_Cooper, Lily_Cooper);
 
+        // getEmailsByCityName Test Data
+        public static Set<String> emails = Set.of("drk@email.com", "soph@email.com", "reg@email.com", "jaboyd@email.com", "bstel@email.com", "clivfd@ymail.com", 
+                        "jpeter@email.com", "aly@imail.com", "ssanw@email.com", "gramps@email.com", "zarc@email.com", "ward@email.com", "tcoop@ymail.com", 
+                        "tenz@email.com", "lily@email.com");
+
 }

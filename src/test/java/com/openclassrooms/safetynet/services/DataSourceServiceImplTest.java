@@ -72,4 +72,11 @@ public class DataSourceServiceImplTest {
         assertEquals(TestData.Tony_Cooper, dataSourceService.getAllByFirstNameAndLastName("", "").get(9));
         assertEquals(TestData.Lily_Cooper, dataSourceService.getAllByFirstNameAndLastName("", "").get(10));
     }
+
+    @Test
+    public void getEmailsByCityNameTest() {
+        assertEquals(TestData.emails, dataSourceService.getEmailsByCityName("Culver"));
+        assertEquals(null, dataSourceService.getEmailsByCityName(""));
+        assertEquals(0, dataSourceService.getEmailsByCityName("NonExistant").size());
+    }
 }
