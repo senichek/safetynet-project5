@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class DataRepo {
 
-    private static DataSource dataSource;
+    private DataSource dataSource;
 
     public DataRepo() throws IOException {
         dataSource = JsonReader

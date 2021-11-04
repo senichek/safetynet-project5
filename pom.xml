@@ -37,6 +37,15 @@
             <version>0.8.7</version>
             <type>maven-plugin</type>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+
+
 	</dependencies>
 	<build>
 		<plugins>
@@ -58,7 +67,6 @@
                 <version>2.21.0</version>
                 <configuration>
                     <includes>
-                                <!-- <include>**/*IT.java</include> -->
                     	<include>**/*Test.java</include>
                     </includes>
                     </configuration>

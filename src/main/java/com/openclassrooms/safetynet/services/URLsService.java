@@ -13,7 +13,7 @@ import com.openclassrooms.safetynet.models.DTO.CoveredByFirestationDTO;
 import com.openclassrooms.safetynet.models.DTO.FireDTO;
 import com.openclassrooms.safetynet.models.DTO.FloodDTO;
 
-public interface DataSourceService {
+public interface URLsService {
     DataSource getAllData();
     CoveredByFirestationDTO getAllPeopleByFirestation(int num);
     List<ChildAlertDTO> getChildrenByAddress(String address);

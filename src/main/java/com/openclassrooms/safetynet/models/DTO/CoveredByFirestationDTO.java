@@ -4,11 +4,13 @@ import java.util.List;
 
 import com.openclassrooms.safetynet.models.PersonFullDetails;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class CoveredByFirestationDTO {
     private List<PersonFullDetails> persons;
     private int numberOfKids;
