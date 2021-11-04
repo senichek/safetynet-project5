@@ -23,8 +23,6 @@ public class MedicalRecordServiceImplTest {
     @Test
     public void SaveTest() {
         // Save
-        // new String[] { "hydrapermazol:300mg", "dodoxadin:30mg" }, new String[] {
-        // "shellfish" }
         Medicalrecord expectedSave = new Medicalrecord("New", "New", LocalDate.of(2005, 8, 30),
                 new String[] { "hydrapermazol:300mg", "dodoxadin:30mg" }, new String[] { "shellfish" });
         Medicalrecord fromServiceSaved = medicalRecordService
