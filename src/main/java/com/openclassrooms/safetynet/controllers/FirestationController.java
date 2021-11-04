@@ -13,7 +13,7 @@ import org.springframework.http.MediaType;
 public class FirestationController {
 
     @Autowired
-    FirestationService firestationService;
+    private FirestationService firestationService;
 
     @PostMapping(value = "/firestation", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Firestation save(@RequestBody Firestation firestation) {

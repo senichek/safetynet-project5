@@ -17,14 +17,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.log4j.Log4j2;
 
 @RestController
-@Log4j2
 public class MainController {
 
     @Autowired
-    URLsService urlService;
+    private URLsService urlService;
 
     // TODO - delete later
     @GetMapping(value = "/data")
@@ -41,7 +39,6 @@ public class MainController {
     @GetMapping(value = "/firestation")
     public ResponseEntity<CoveredByFirestationDTO> getAllCoveredByFirestation(
             @RequestParam(name = "stationNumber", required = false) Integer stationNum) {
-        log.info("MainController.getAllCoveredByFirestation(stationNum) was called.");
         if (stationNum == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
@@ -52,7 +49,6 @@ public class MainController {
     @GetMapping(value = "/childAlert")
     public ResponseEntity<List<ChildAlertDTO>> getChildrenByAddress(
             @RequestParam(name = "address", required = false) String address) {
-        log.info("MainController.getChildrenByAddress(address) was called.");
         if (address.equals("") || urlService.getChildrenByAddress(address) == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
@@ -63,7 +59,6 @@ public class MainController {
     @GetMapping(value = "/phoneAlert")
     public ResponseEntity<Set<String>> getPhonesByFirestation(
             @RequestParam(name = "firestation", required = false) Integer num) {
-        log.info("MainController.getPhonesByFirestation(num) was called.");
         if (num == null || urlService.getPhonesByFirestation(num) == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
@@ -74,7 +69,6 @@ public class MainController {
     @GetMapping(value = "/fire")
     public ResponseEntity<FireDTO> getAllByAddressFire(
             @RequestParam(name = "address", required = false) String address) {
-        log.info("MainController.getAllByAddressInCaseOfFire(address) was called.");
         if (address.equals("") || urlService.getAllByAddressInCaseOfFire(address) == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
@@ -85,7 +79,6 @@ public class MainController {
     @GetMapping(value = "/flood/stations")
     public ResponseEntity<List<FloodDTO>> getAllByFireStationNumberFlood(
             @RequestParam(name = "stations", required = false) Set<Integer> fStationNums) {
-        log.info("MainController.getAllByFireStationNumberFlood(fStationNums) was called.");
         if (fStationNums.size() == 0 || urlService.getAllByFireStationNumberFlood(fStationNums) == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
@@ -97,7 +90,6 @@ public class MainController {
     public ResponseEntity<List<PersonFullDetails>> getAllByFirstNameAndLastName(
             @RequestParam(name = "firstName", required = false) String firstName,
             @RequestParam(name = "lastName", required = false) String lastName) {
-        log.info("MainController.getAllByFirstNameAndLastName(firstName, lastName) was called.");
         if (urlService.getAllByFirstNameAndLastName(firstName, lastName) == null
                 || urlService.getAllByFirstNameAndLastName(firstName, lastName).size() == 0) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -109,7 +101,6 @@ public class MainController {
 
     @GetMapping(value = "/communityEmail")
     public ResponseEntity<Set<String>> getEmailsByCityName(@RequestParam(name = "city", required = false) String city) {
-        log.info("MainController.getEmailsByCityName(city) was called.");
         if (urlService.getEmailsByCityName(city) == null
                 || urlService.getEmailsByCityName(city).size() == 0) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
