@@ -1,8 +1,10 @@
 package com.openclassrooms.safetynet.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openclassrooms.safetynet.models.Person;
-import com.openclassrooms.safetynet.services.PersonService;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.openclassrooms.safetynet.models.Firestation;
+import com.openclassrooms.safetynet.services.FirestationService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +16,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = PersonController.class)
-public class PersonControllerTest {
+@WebMvcTest(controllers = FirestationController.class)
+public class FirestationControllerTest {
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -25,14 +28,14 @@ public class PersonControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private PersonService personService;
+    private FirestationService firestationService;
 
     @Test
     public void saveTest() throws Exception {
-        Person prs = new Person("NewPrs", "NewPrs", null, null, null, null, null);
-        mockMvc.perform(post("/person")
+        Firestation fStation = new Firestation("Street_name", 9);
+        mockMvc.perform(post("/firestation")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(mapper.writeValueAsString(prs)))
+        .content(mapper.writeValueAsString(fStation)))
         .andExpect(status().isOk())
         .andDo(print());
     }
@@ -40,27 +43,20 @@ public class PersonControllerTest {
     @Test
     public void SaveBadDataTest() throws Exception {
         // Method cannot accept a Person without f/l name
-        Person prsEmpty = new Person("", "", null, null, null, null, null);
-        mockMvc.perform(post("/person")
+        Firestation fStationEmpty = new Firestation("", 0);
+        mockMvc.perform(post("/firestation")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(mapper.writeValueAsString(prsEmpty)))
-        .andExpect(status().isBadRequest())
-        .andDo(print());
-
-        Person prsNulls = new Person(null, null, null, null, null, null, null);
-        mockMvc.perform(post("/person")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(mapper.writeValueAsString(prsNulls)))
+        .content(mapper.writeValueAsString(fStationEmpty)))
         .andExpect(status().isBadRequest())
         .andDo(print());
     }
 
     @Test
     public void deleteTest() throws Exception {
-        Person prs = new Person("NewPrs", "NewPrs", null, null, null, null, null);
-        mockMvc.perform(delete("/person")
+        Firestation fStation = new Firestation("Street", 5);
+        mockMvc.perform(delete("/firestation")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(mapper.writeValueAsString(prs)))
+        .content(mapper.writeValueAsString(fStation)))
         .andExpect(status().isOk())
         .andDo(print());
     }
@@ -68,18 +64,25 @@ public class PersonControllerTest {
     @Test
     public void deleteBadDataTest() throws Exception {
         // Method cannot accept a Person without f/l name
-        Person prsEmpty = new Person("", "", null, null, null, null, null);
-        mockMvc.perform(delete("/person")
+        Firestation fStationEmpty = new Firestation("", 5);
+        mockMvc.perform(delete("/firestation")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(mapper.writeValueAsString(prsEmpty)))
+        .content(mapper.writeValueAsString(fStationEmpty)))
         .andExpect(status().isBadRequest())
         .andDo(print());
+    }
 
-        Person prsNulls = new Person(null, null, null, null, null, null, null);
-        mockMvc.perform(delete("/person")
+    @Test
+    public void updateTest() throws Exception {
+        ObjectNode objectNode = mapper.createObjectNode();
+        objectNode.set("address", mapper.convertValue("Av. de Paris", JsonNode.class));
+        objectNode.set("station", mapper.convertValue("5", JsonNode.class));
+        objectNode.set("new_num", mapper.convertValue("6", JsonNode.class));
+
+        mockMvc.perform(put("/firestation")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(mapper.writeValueAsString(prsNulls)))
-        .andExpect(status().isBadRequest())
-        .andDo(print());
+        .content(mapper.writeValueAsString(objectNode)))
+        .andExpect(status().isOk())
+        .andDo(print());        
     }
 }

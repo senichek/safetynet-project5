@@ -30,9 +30,6 @@ public class MainControllerTest {
     @MockBean
     private URLsService urlService;
 
-    @Autowired
-    MainController mainController;
-
     @Test
     public void getAllCoveredByFirestationTest() throws Exception {
         mockMvc.perform(get("/firestation?stationNumber=4"))

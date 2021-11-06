@@ -17,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class URLsServiceImplTest {
 
     @Autowired
-    URLsService urlService;
+    private URLsService urlService;
 
     @Test
     public void getAllPersonsByFirestationTest() {

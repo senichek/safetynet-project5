@@ -13,10 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class PersonServiceImplTest {
 
     @Autowired
-    PersonService personService;
+    private PersonService personService;
 
     @Autowired
-    DataRepo dataRepo;
+    private DataRepo dataRepo;
 
     @Test
     public void saveTest() {

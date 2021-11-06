@@ -1,0 +1,40 @@
+@startuml API
+User -> SafeNet_API: 1. Request (GET): http://localhost:8080/firestation?stationNumber=<station_number>
+SafeNet_API--> User : Response: la liste des personnes couvertes par la caserne de pompiers correspondante;
+
+User -> SafeNet_API: 2. Request (GET): http://localhost:8080/childAlert?address=<address>
+SafeNet_API--> User : Response:  liste d'enfants (tout individu âgé de 18 ans ou moins) habitant à cette adresse;
+
+User -> SafeNet_API: 3. Request (GET): http://localhost:8080/phoneAlert?firestation=<firestation_number>
+SafeNet_API--> User : Response:  la liste des numéros de téléphone des résidents desservis par la caserne;
+
+User -> SafeNet_API: 4. Request (GET): http://localhost:8080/fire?address=<address>
+SafeNet_API--> User : Response:  la liste des habitants vivant à l’adresse donnée ainsi que le numéro de la caserne de pompiers la desservant;
+
+User -> SafeNet_API: 5. Request (GET): http://localhost:8080/flood/stations?stations=<a list of station_numbers>
+SafeNet_API--> User : Response: la liste de tous les foyers desservis par la caserne. Cette liste doit regrouper les personnes par adresse;
+
+User -> SafeNet_API: 6. Request (GET): http://localhost:8080/personInfo?firstName=<firstName>&lastName=<lastName>
+SafeNet_API--> User : Response: le nom, l'adresse, l'âge, l'adresse mail et les antécédents médicaux;
+
+User -> SafeNet_API: 7. Request (GET): http://localhost:8080/communityEmail?city=<city>
+SafeNet_API--> User : Response:  les adresses mail de tous les habitants de la ville;
+
+User -> SafeNet_API: 8. Request (POST) to SAVE or UPDATE person: http://localhost:8080/person
+SafeNet_API--> User : Response:  personne qui a été créée ou mise à jour;
+
+User -> SafeNet_API: 9. Request (DELETE): http://localhost:8080/person
+SafeNet_API--> User : Response:  personne qui a été supprimée;
+
+User -> SafeNet_API: 10. Request (POST): http://localhost:8080/firestation
+SafeNet_API--> User : Response:  Caserne de pompiers qui a été créée ou mise à jour;
+
+User -> SafeNet_API: 11. Request (DELETE): http://localhost:8080/firestation
+SafeNet_API--> User : Response:  Caserne de pompiers qui a été supprimée;
+
+User -> SafeNet_API: 12. Request (POST): http://localhost:8080/medicalRecord
+SafeNet_API--> User : Response:  le dossier médical qui a été créée ou mise à jour;
+
+User -> SafeNet_API: 13. Request (DELETE): http://localhost:8080/medicalRecord
+SafeNet_API--> User : Response:  le dossier médical qui a été supprimé;
+@enduml

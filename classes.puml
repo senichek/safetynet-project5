@@ -1,0 +1,195 @@
+@startuml
+class JsonReader {
+  +DataSource getData(String pathToJson)
+}
+
+class DataRepo {
+  +DataSource getData()
+}
+
+JsonReader *-- DataRepo
+
+class PersonServiceImpl 
+interface PersonService {
+    +Person save(Person person)
+    +Person delete(Person person)
+}
+PersonService <|-- PersonServiceImpl
+
+class URLsServiceImpl 
+interface URLsService {
+    +DataSource getAllData()
+    +CoveredByFirestationDTO getAllPeopleByFirestation(int num)
+    +List<ChildAlertDTO> getChildrenByAddress(String address)
+    +List<Person> getHousholdMembers(String firstName, String lastName, String address)
+    +Set<String> getPhonesByFirestation(Integer fStationNumber)
+    +FireDTO getAllByAddressInCaseOfFire(String address)
+    +Set<Firestation> getFirestationsByAddress(String address)
+    +LocalDate getBirthdateByName(String fName, String lName)
+    +String[] getMedicationsByPersonName(String fName, String lName)
+    +String[] getAllergiesByPersonName(String fName, String lName)
+    +int getAgeByPersonName(String fName, String lName)
+    +List<FloodDTO> getAllByFireStationNumberFlood(Set<Integer> fireStationNums)
+    +List<PersonFullDetails> getAllByFirstNameAndLastName(String firstName, String lastName)
+    +Set<String> getEmailsByCityName(String city)
+}
+URLsService <|-- URLsServiceImpl
+
+class MedicalRecordServiceImpl 
+interface MedicalRecordService {
+    +Medicalrecord save(Medicalrecord medicalrecord)
+    +Medicalrecord delete(Medicalrecord medicalrecord)
+}
+MedicalRecordService <|-- MedicalRecordServiceImpl
+
+class FirestationServiceImpl 
+interface FirestationService {
+    +Firestation save(Firestation firestation)
+    +Firestation delete(Firestation firestation)
+}
+FirestationService <|-- FirestationServiceImpl
+
+DataRepo -- PersonServiceImpl
+DataRepo -- URLsServiceImpl
+DataRepo -- MedicalRecordServiceImpl
+DataRepo -- FirestationServiceImpl
+
+class Person{
+    -private String firstName;
+    -private String lastName;
+    -private String address;
+    -private String city;
+    -private String zip;
+    -private String phone;
+    -private String email;
+    +getters()
+    +setters()
+    +hash()
+    +equals()
+}
+
+class Medicalrecord{
+    -private String firstName;
+    -private String lastName;
+    -private LocalDate birthdate;
+    -private String[] medications;
+    -private String[] allergies;
+    +getters()
+    +setters()
+    +hash()
+    +equals()
+}
+
+class Firestation{
+    -private String address;
+    -private int station;
+    +getters()
+    +setters()
+    +hash()
+    +equals()
+}
+
+class DataSource{
+    -private List<Person> persons;
+    -private List<Firestation> firestations;
+    -private List<Medicalrecord> medicalrecords;
+    +getters()
+    +setters()
+    +hash()
+    +equals()
+}
+
+class PersonFullDetails{
+    -private String firstName;
+    -private String lastName;
+    -private String address;
+    -private String city;
+    -private String zip;
+    -private String phone;
+    -private String email;
+    -private LocalDate birthdate;
+    -private Integer age;
+    -private String[] medications;
+    -private String[] allergies;
+    -private Set<Firestation> firestations;
+    +getters()
+    +setters()
+    +hash()
+    +equals()
+}
+
+PersonFullDetails o-- Person
+PersonFullDetails o-- Medicalrecord
+PersonFullDetails o-- Firestation
+
+Firestation *-- DataSource
+Medicalrecord *-- DataSource
+Person *-- DataSource
+
+class ChildAlertDTO{
+    -private String firstName;
+    -private String lastName;
+    -private int age;
+    -private List<Person> membersOfHoushold;
+    +getters()
+    +setters()
+    +hash()
+    +equals()
+}
+Person *-- ChildAlertDTO
+
+class CoveredByFirestationDTO {
+    -private List<PersonFullDetails> persons;
+    -private int numberOfKids;
+    -private int numberOfAdults;
+    +getters()
+    +setters()
+    +hash()
+    +equals()
+}
+PersonFullDetails *-- CoveredByFirestationDTO
+
+
+class FireDTO{
+    -private List<PersonFullDetails> persons;
+    -private Set<Integer> fireStationNumbers;
+    +getters()
+    +setters()
+    +hash()
+    +equals()
+}
+PersonFullDetails *-- FireDTO
+
+class FloodDTO{
+    -private String address;
+    -private List<PersonFullDetails> people;
+    +getters()
+    +setters()
+    +hash()
+    +equals()
+}
+PersonFullDetails *-- FloodDTO
+
+class MainController {
+    -private URLsService urlService;
+
+}
+
+class PersonController {
+    -private PersonService personService;
+}
+
+Class MedicalrecordController {
+    -private MedicalRecordService medicalRecordService;
+}
+
+class FirestationController {
+    -private FirestationService firestationService;
+}
+
+URLsService *-- MainController
+PersonService *-- PersonController
+MedicalRecordService *-- MedicalrecordController
+FirestationService *-- FirestationController
+
+@enduml

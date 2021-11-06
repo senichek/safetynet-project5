@@ -25,7 +25,7 @@ public class MedicalrecordControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    MedicalRecordService medicalRecordService;
+    private MedicalRecordService medicalRecordService;
 
     @Test
     public void saveTest() throws Exception {

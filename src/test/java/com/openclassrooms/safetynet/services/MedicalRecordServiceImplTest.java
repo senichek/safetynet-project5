@@ -15,10 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class MedicalRecordServiceImplTest {
 
     @Autowired
-    MedicalRecordService medicalRecordService;
+    private MedicalRecordService medicalRecordService;
 
     @Autowired
-    DataRepo dataRepo;
+    private DataRepo dataRepo;
 
     @Test
     public void SaveTest() {
